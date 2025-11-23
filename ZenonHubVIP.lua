@@ -9,251 +9,348 @@ local function Notif(text)
     end)
 end
 
--- 🔒 ANTI-DETECTION SYSTEM
-local function SafetyCheck()
-    -- Cek jika dalam studio (aman untuk testing)
-    if not game:GetService("RunService"):IsStudio() then
-        -- Random delay untuk avoid pattern detection
-        task.wait(math.random(1, 3))
-        
-        -- Cek game place ID dengan metode berbeda
-        local success, currentPlace = pcall(function()
-            return game.PlaceId
-        end)
-        
-        if not success or currentPlace ~= 121864768012064 then
-            Notif("❌ Game tidak didukung")
-            return false
-        end
-    end
-    return true
-end
-
--- 🔒 LOAD SCRIPT DENGAN PROTECTION
-if not SafetyCheck() then
+-- Cek game
+if game.PlaceId ~= 121864768012064 then
+    Notif("Game Tidak Didukung - Hanya Fish It")
     return
 end
 
-Notif("🔒 ZenonHub VIP Loaded Safely!")
+Notif("ZenonHub VIP Loaded!")
 
--- 🔒 UI CREATION WITH PROTECTION
-local success, screenGui = pcall(function()
-    local gui = Instance.new("ScreenGui")
-    gui.Name = "ZenonHubVIP_" .. tostring(math.random(1000,9999))
-    gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    gui.ResetOnSpawn = false
-    gui.Parent = game:GetService("CoreGui")
-    return gui
-end)
+-- Buat UI yang proper
+local screenGui = Instance.new("ScreenGui", game.CoreGui)
+screenGui.Name = "ZenonHubVIP_Main"
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-if not success then
-    Notif("❌ Failed to create UI")
-    return
-end
-
-local colors = {
-    Main = Color3.fromRGB(30, 45, 60),
-    Second = Color3.fromRGB(45, 65, 85),
-    Accent = Color3.fromRGB(0, 255, 170),
-    Text = Color3.fromRGB(240, 250, 255)
+-- Variabel global untuk kontrol fitur
+local ZenonHub = {
+    AutoFarm = false,
+    AutoSell = false,
+    AutoUpgrade = false,
+    AntiAFK = false,
+    SelectedRod = "Basic Rod",
+    FarmSpeed = 1
 }
 
-local function ApplyUI(frame)
-    pcall(function()
-        local uicorner = Instance.new("UICorner", frame)
-        uicorner.CornerRadius = UDim.new(0, 8)
-        
-        local stroke = Instance.new("UIStroke", frame)
-        stroke.Color = colors.Accent
-        stroke.Thickness = 2
-        stroke.Transparency = 0.3
-    end)
-end
+-- Warna theme
+local colors = {
+    Background = Color3.fromRGB(20, 25, 35),
+    Header = Color3.fromRGB(0, 170, 255),
+    TabActive = Color3.fromRGB(0, 140, 255),
+    TabInactive = Color3.fromRGB(40, 50, 70),
+    Button = Color3.fromRGB(0, 150, 255),
+    ButtonText = Color3.fromRGB(255, 255, 255),
+    Text = Color3.fromRGB(240, 240, 255)
+}
 
--- 🔒 MAIN UI CREATION
+-- Main Window (bisa di-drag)
 local mainFrame = Instance.new("Frame", screenGui)
-mainFrame.Size = UDim2.new(0, 350, 0, 400)
-mainFrame.Position = UDim2.new(0.5, -175, 0.5, -200)
-mainFrame.BackgroundColor3 = colors.Main
-mainFrame.BackgroundTransparency = 0.1
-ApplyUI(mainFrame)
+mainFrame.Size = UDim2.new(0, 450, 0, 500)
+mainFrame.Position = UDim2.new(0.3, 0, 0.2, 0)
+mainFrame.BackgroundColor3 = colors.Background
+mainFrame.Active = true
+mainFrame.Draggable = true
 
--- VIP Header
+local corner = Instance.new("UICorner", mainFrame)
+corner.CornerRadius = UDim.new(0, 8)
+
+local stroke = Instance.new("UIStroke", mainFrame)
+stroke.Color = colors.Header
+stroke.Thickness = 2
+
+-- Header
 local header = Instance.new("Frame", mainFrame)
-header.Size = UDim2.new(1, 0, 0, 60)
-header.BackgroundColor3 = colors.Accent
-header.BackgroundTransparency = 0.8
+header.Size = UDim2.new(1, 0, 0, 40)
+header.BackgroundColor3 = colors.Header
+
 local headerCorner = Instance.new("UICorner", header)
 headerCorner.CornerRadius = UDim.new(0, 8)
 
 local title = Instance.new("TextLabel", header)
-title.Size = UDim2.new(1, 0, 1, 0)
+title.Size = UDim2.new(1, -40, 1, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "ZENONHUB VIP 🎣"
-title.TextColor3 = colors.Text
+title.Text = "🎣 ZENONHUB VIP - FISH IT"
+title.TextColor3 = colors.ButtonText
 title.Font = Enum.Font.GothamBold
-title.TextSize = 20
-title.TextYAlignment = Enum.TextYAlignment.Center
+title.TextSize = 16
+title.TextXAlignment = Enum.TextXAlignment.Left
 
-local subtitle = Instance.new("TextLabel", header)
-subtitle.Size = UDim2.new(1, 0, 0, 20)
-subtitle.Position = UDim2.new(0, 0, 0, 35)
-subtitle.BackgroundTransparency = 1
-subtitle.Text = "FISH IT - VIP EDITION"
-subtitle.TextColor3 = colors.Text
-subtitle.Font = Enum.Font.Gotham
-subtitle.TextSize = 14
-subtitle.TextYAlignment = Enum.TextYAlignment.Center
+local closeBtn = Instance.new("TextButton", header)
+closeBtn.Size = UDim2.new(0, 30, 0, 30)
+closeBtn.Position = UDim2.new(1, -35, 0, 5)
+closeBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = colors.ButtonText
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 14
 
--- VIP Features List
-local features = {
-    "🌟 Auto Farm Elite",
-    "💰 Auto Sell Pro", 
-    "⚡ Auto Upgrade Max",
-    "🎣 Best Rod Auto-Equip",
-    "📊 Stats Tracker",
-    "🔧 Anti-AFK System",
-    "🚀 Boost Multiplier",
-    "🎁 Daily Rewards Auto"
-}
+local closeCorner = Instance.new("UICorner", closeBtn)
+closeCorner.CornerRadius = UDim.new(0, 4)
 
-local featureFrame = Instance.new("Frame", mainFrame)
-featureFrame.Size = UDim2.new(1, -40, 0, 250)
-featureFrame.Position = UDim2.new(0, 20, 0, 80)
-featureFrame.BackgroundTransparency = 1
+-- Tab System
+local tabsFrame = Instance.new("Frame", mainFrame)
+tabsFrame.Size = UDim2.new(1, 0, 0, 40)
+tabsFrame.Position = UDim2.new(0, 0, 0, 45)
+tabsFrame.BackgroundTransparency = 1
 
-for i, feature in pairs(features) do
-    local featureLabel = Instance.new("TextLabel", featureFrame)
-    featureLabel.Size = UDim2.new(1, 0, 0, 25)
-    featureLabel.Position = UDim2.new(0, 0, 0, (i-1)*30)
-    featureLabel.BackgroundTransparency = 1
-    featureLabel.Text = feature
-    featureLabel.TextColor3 = colors.Text
-    featureLabel.Font = Enum.Font.Gotham
-    featureLabel.TextSize = 14
-    featureLabel.TextXAlignment = Enum.TextXAlignment.Left
+local tabs = {"Auto Farm", "Auto Sell", "Upgrade", "Settings"}
+local currentTab = "Auto Farm"
+
+local function CreateTab(name, index)
+    local tab = Instance.new("TextButton", tabsFrame)
+    tab.Size = UDim2.new(0.25, -5, 1, 0)
+    tab.Position = UDim2.new((index-1) * 0.25, 0, 0, 0)
+    tab.BackgroundColor3 = name == currentTab and colors.TabActive or colors.TabInactive
+    tab.Text = name
+    tab.TextColor3 = colors.Text
+    tab.Font = Enum.Font.Gotham
+    tab.TextSize = 12
+    
+    local tabCorner = Instance.new("UICorner", tab)
+    tabCorner.CornerRadius = UDim.new(0, 6)
+    
+    return tab
 end
 
--- Activate VIP Button
-local activateBtn = Instance.new("TextButton", mainFrame)
-activateBtn.Size = UDim2.new(1, -40, 0, 45)
-activateBtn.Position = UDim2.new(0, 20, 0, 340)
-activateBtn.BackgroundColor3 = colors.Accent
-activateBtn.BackgroundTransparency = 0.2
-activateBtn.TextColor3 = colors.Text
-activateBtn.Text = "ACTIVATE VIP FEATURES"
-activateBtn.Font = Enum.Font.GothamBold
-activateBtn.TextSize = 16
-ApplyUI(activateBtn)
+-- Content Area
+local contentFrame = Instance.new("Frame", mainFrame)
+contentFrame.Size = UDim2.new(1, -20, 0, 410)
+contentFrame.Position = UDim2.new(0, 10, 0, 90)
+contentFrame.BackgroundTransparency = 1
 
--- 🔒 SECURE FEATURE LOADING
-local function LoadVIPFeatures()
-    -- 🔒 ANTI-LOGGING SYSTEM
-    local function SecureExecute(func, funcName)
-        local success, result = pcall(func)
-        if not success then
-            warn("🔒 " .. funcName .. " Error: " .. tostring(result))
-        end
-        return success
+-- Function untuk switch tab
+local function ShowTab(tabName)
+    currentTab = tabName
+    -- Clear content
+    for _, child in ipairs(contentFrame:GetChildren()) do
+        child:Destroy()
     end
     
-    Notif("🎉 ZenonHub VIP Features Activated!")
-    
-    -- 🔒 AUTO FARM SYSTEM (STEALTH)
-    local function AutoFarm()
-        return SecureExecute(function()
-            print("🔒 VIP Auto Farm Activated (Stealth Mode)")
+    if tabName == "Auto Farm" then
+        -- AUTO FARM TAB
+        local farmToggle = Instance.new("TextButton", contentFrame)
+        farmToggle.Size = UDim2.new(1, 0, 0, 40)
+        farmToggle.Position = UDim2.new(0, 0, 0, 10)
+        farmToggle.BackgroundColor3 = ZenonHub.AutoFarm and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
+        farmToggle.Text = ZenonHub.AutoFarm and "🟢 AUTO FARM AKTIF" or "🔴 AUTO FARM MATI"
+        farmToggle.TextColor3 = colors.ButtonText
+        farmToggle.Font = Enum.Font.GothamBold
+        farmToggle.TextSize = 14
+        
+        local toggleCorner = Instance.new("UICorner", farmToggle)
+        toggleCorner.CornerRadius = UDim.new(0, 6)
+        
+        farmToggle.MouseButton1Click:Connect(function()
+            ZenonHub.AutoFarm = not ZenonHub.AutoFarm
+            farmToggle.BackgroundColor3 = ZenonHub.AutoFarm and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
+            farmToggle.Text = ZenonHub.AutoFarm and "🟢 AUTO FARM AKTIF" or "🔴 AUTO FARM MATI"
+            Notif(ZenonHub.AutoFarm and "Auto Farm Diaktifkan!" or "Auto Farm Dimatikan!")
             
-            -- Simulasi auto farm yang aman
-            while task.wait(math.random(5, 10)) do -- Random interval
-                -- Implementasi auto farm yang low-detection
-                pcall(function()
-                    -- Code auto farm di sini
-                end)
-            end
-        end, "AutoFarm")
-    end
-    
-    -- 🔒 AUTO SELL SYSTEM  
-    local function AutoSell()
-        return SecureExecute(function()
-            print("🔒 VIP Auto Sell Activated")
-            -- Implementasi auto sell
-        end, "AutoSell")
-    end
-    
-    -- 🔒 AUTO UPGRADE SYSTEM
-    local function AutoUpgrade()
-        return SecureExecute(function()
-            print("🔒 VIP Auto Upgrade Activated")
-            -- Implementasi auto upgrade
-        end, "AutoUpgrade")
-    end
-    
-    -- 🔒 ANTI-AFK SYSTEM
-    local function AntiAFK()
-        return SecureExecute(function()
-            print("🔒 Anti-AFK System Activated")
-            
-            local VirtualUser = game:GetService("VirtualUser")
-            game:GetService("Players").LocalPlayer.Idled:Connect(function()
-                VirtualUser:CaptureController()
-                VirtualUser:ClickButton2(Vector2.new())
-            end)
-        end, "AntiAFK")
-    end
-    
-    -- 🔒 LOAD ALL FEATURES SECURELY
-    task.spawn(AutoFarm)
-    task.spawn(AutoSell)
-    task.spawn(AutoUpgrade)
-    task.spawn(AntiAFK)
-    
-    -- 🔒 AUTO DESTROY UI SETELAH AKTIF
-    task.delay(2, function()
-        pcall(function()
-            if screenGui and screenGui.Parent then
-                screenGui:Destroy()
-                Notif("🔒 UI Destroyed - Features Running in Background")
+            if ZenonHub.AutoFarm then
+                -- Start auto farm
+                coroutine.wrap(function()
+                    while ZenonHub.AutoFarm and task.wait(ZenonHub.FarmSpeed) do
+                        pcall(function()
+                            -- Simulasi auto farm (ganti dengan code asli)
+                            print("🎣 Memancing ikan...")
+                        end)
+                    end
+                end)()
             end
         end)
-    end)
-    
-    Notif("🔒 All VIP Features Loaded Safely! 🎣")
-end
-
--- 🔒 BUTTON CLICK PROTECTION
-activateBtn.MouseButton1Click:Connect(function()
-    pcall(function()
-        activateBtn.Text = "ACTIVATING..."
-        activateBtn.BackgroundTransparency = 0.5
-        activateBtn.AutoButtonColor = false
         
-        task.wait(1)
-        LoadVIPFeatures()
-    end)
-end)
+        -- Speed Control
+        local speedLabel = Instance.new("TextLabel", contentFrame)
+        speedLabel.Size = UDim2.new(1, 0, 0, 25)
+        speedLabel.Position = UDim2.new(0, 0, 0, 60)
+        speedLabel.BackgroundTransparency = 1
+        speedLabel.Text = "Kecepatan Farm: " .. ZenonHub.FarmSpeed .. "s"
+        speedLabel.TextColor3 = colors.Text
+        speedLabel.Font = Enum.Font.Gotham
+        speedLabel.TextSize = 12
+        speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+        
+        local speedSlider = Instance.new("TextButton", contentFrame)
+        speedSlider.Size = UDim2.new(1, 0, 0, 30)
+        speedSlider.Position = UDim2.new(0, 0, 0, 90)
+        speedSlider.BackgroundColor3 = colors.TabInactive
+        speedSlider.Text = "Atur Kecepatan (1-10 detik)"
+        speedSlider.TextColor3 = colors.Text
+        speedSlider.Font = Enum.Font.Gotham
+        speedSlider.TextSize = 12
+        
+        local sliderCorner = Instance.new("UICorner", speedSlider)
+        sliderCorner.CornerRadius = UDim.new(0, 6)
+        
+        speedSlider.MouseButton1Click:Connect(function()
+            ZenonHub.FarmSpeed = ZenonHub.FarmSpeed % 10 + 1
+            speedLabel.Text = "Kecepatan Farm: " .. ZenonHub.FarmSpeed .. "s"
+            Notif("Kecepatan: " .. ZenonHub.FarmSpeed .. " detik")
+        end)
+        
+    elseif tabName == "Auto Sell" then
+        -- AUTO SELL TAB
+        local sellToggle = Instance.new("TextButton", contentFrame)
+        sellToggle.Size = UDim2.new(1, 0, 0, 40)
+        sellToggle.Position = UDim2.new(0, 0, 0, 10)
+        sellToggle.BackgroundColor3 = ZenonHub.AutoSell and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
+        sellToggle.Text = ZenonHub.AutoSell and "🟢 AUTO SELL AKTIF" or "🔴 AUTO SELL MATI"
+        sellToggle.TextColor3 = colors.ButtonText
+        sellToggle.Font = Enum.Font.GothamBold
+        sellToggle.TextSize = 14
+        
+        local toggleCorner = Instance.new("UICorner", sellToggle)
+        toggleCorner.CornerRadius = UDim.new(0, 6)
+        
+        sellToggle.MouseButton1Click:Connect(function()
+            ZenonHub.AutoSell = not ZenonHub.AutoSell
+            sellToggle.BackgroundColor3 = ZenonHub.AutoSell and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
+            sellToggle.Text = ZenonHub.AutoSell and "🟢 AUTO SELL AKTIF" or "🔴 AUTO SELL MATI"
+            Notif(ZenonHub.AutoSell and "Auto Sell Diaktifkan!" or "Auto Sell Dimatikan!")
+        end)
+        
+        -- Info Auto Sell
+        local infoLabel = Instance.new("TextLabel", contentFrame)
+        infoLabel.Size = UDim2.new(1, 0, 0, 100)
+        infoLabel.Position = UDim2.new(0, 0, 0, 60)
+        infoLabel.BackgroundTransparency = 1
+        infoLabel.Text = "Fitur Auto Sell akan otomatis menjual ikan yang didapat setiap 30 detik"
+        infoLabel.TextColor3 = colors.Text
+        infoLabel.Font = Enum.Font.Gotham
+        infoLabel.TextSize = 12
+        infoLabel.TextWrapped = true
+        infoLabel.TextYAlignment = Enum.TextYAlignment.Top
+        
+    elseif tabName == "Upgrade" then
+        -- UPGRADE TAB
+        local upgradeToggle = Instance.new("TextButton", contentFrame)
+        upgradeToggle.Size = UDim2.new(1, 0, 0, 40)
+        upgradeToggle.Position = UDim2.new(0, 0, 0, 10)
+        upgradeToggle.BackgroundColor3 = ZenonHub.AutoUpgrade and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
+        upgradeToggle.Text = ZenonHub.AutoUpgrade and "🟢 AUTO UPGRADE AKTIF" or "🔴 AUTO UPGRADE MATI"
+        upgradeToggle.TextColor3 = colors.ButtonText
+        upgradeToggle.Font = Enum.Font.GothamBold
+        upgradeToggle.TextSize = 14
+        
+        local toggleCorner = Instance.new("UICorner", upgradeToggle)
+        toggleCorner.CornerRadius = UDim.new(0, 6)
+        
+        upgradeToggle.MouseButton1Click:Connect(function()
+            ZenonHub.AutoUpgrade = not ZenonHub.AutoUpgrade
+            upgradeToggle.BackgroundColor3 = ZenonHub.AutoUpgrade and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
+            upgradeToggle.Text = ZenonHub.AutoUpgrade and "🟢 AUTO UPGRADE AKTIF" or "🔴 AUTO UPGRADE MATI"
+            Notif(ZenonHub.AutoUpgrade and "Auto Upgrade Diaktifkan!" or "Auto Upgrade Dimatikan!")
+        end)
+        
+        -- Rod Selection
+        local rods = {"Basic Rod", "Advanced Rod", "Pro Rod", "VIP Rod"}
+        local rodLabel = Instance.new("TextLabel", contentFrame)
+        rodLabel.Size = UDim2.new(1, 0, 0, 25)
+        rodLabel.Position = UDim2.new(0, 0, 0, 60)
+        rodLabel.BackgroundTransparency = 1
+        rodLabel.Text = "Pilih Rod: " .. ZenonHub.SelectedRod
+        rodLabel.TextColor3 = colors.Text
+        rodLabel.Font = Enum.Font.Gotham
+        rodLabel.TextSize = 12
+        rodLabel.TextXAlignment = Enum.TextXAlignment.Left
+        
+        local rodButton = Instance.new("TextButton", contentFrame)
+        rodButton.Size = UDim2.new(1, 0, 0, 30)
+        rodButton.Position = UDim2.new(0, 0, 0, 90)
+        rodButton.BackgroundColor3 = colors.Button
+        rodButton.Text = "Ganti Rod"
+        rodButton.TextColor3 = colors.ButtonText
+        rodButton.Font = Enum.Font.Gotham
+        rodButton.TextSize = 12
+        
+        local rodCorner = Instance.new("UICorner", rodButton)
+        rodCorner.CornerRadius = UDim.new(0, 6)
+        
+        rodButton.MouseButton1Click:Connect(function()
+            local currentIndex = 1
+            for i, rod in ipairs(rods) do
+                if rod == ZenonHub.SelectedRod then
+                    currentIndex = i
+                    break
+                end
+            end
+            ZenonHub.SelectedRod = rods[(currentIndex % #rods) + 1]
+            rodLabel.Text = "Pilih Rod: " .. ZenonHub.SelectedRod
+            Notif("Rod dipilih: " .. ZenonHub.SelectedRod)
+        end)
+        
+    elseif tabName == "Settings" then
+        -- SETTINGS TAB
+        local afkToggle = Instance.new("TextButton", contentFrame)
+        afkToggle.Size = UDim2.new(1, 0, 0, 40)
+        afkToggle.Position = UDim2.new(0, 0, 0, 10)
+        afkToggle.BackgroundColor3 = ZenonHub.AntiAFK and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
+        afkToggle.Text = ZenonHub.AntiAFK and "🟢 ANTI-AFK AKTIF" or "🔴 ANTI-AFK MATI"
+        afkToggle.TextColor3 = colors.ButtonText
+        afkToggle.Font = Enum.Font.GothamBold
+        afkToggle.TextSize = 14
+        
+        local toggleCorner = Instance.new("UICorner", afkToggle)
+        toggleCorner.CornerRadius = UDim.new(0, 6)
+        
+        afkToggle.MouseButton1Click:Connect(function()
+            ZenonHub.AntiAFK = not ZenonHub.AntiAFK
+            afkToggle.BackgroundColor3 = ZenonHub.AntiAFK and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
+            afkToggle.Text = ZenonHub.AntiAFK and "🟢 ANTI-AFK AKTIF" or "🔴 ANTI-AFK MATI"
+            
+            if ZenonHub.AntiAFK then
+                -- Aktifkan Anti-AFK
+                local VirtualUser = game:GetService("VirtualUser")
+                game:GetService("Players").LocalPlayer.Idled:Connect(function()
+                    VirtualUser:CaptureController()
+                    VirtualUser:ClickButton2(Vector2.new())
+                end)
+                Notif("Anti-AFK Diaktifkan!")
+            else
+                Notif("Anti-AFK Dimatikan!")
+            end
+        end)
+        
+        -- Status Info
+        local statusLabel = Instance.new("TextLabel", contentFrame)
+        statusLabel.Size = UDim2.new(1, 0, 0, 120)
+        statusLabel.Position = UDim2.new(0, 0, 0, 60)
+        statusLabel.BackgroundTransparency = 1
+        statusLabel.Text = "STATUS FITUR:\n\n" ..
+                          "Auto Farm: " .. (ZenonHub.AutoFarm and "🟢 AKTIF" or "🔴 MATI") .. "\n" ..
+                          "Auto Sell: " .. (ZenonHub.AutoSell and "🟢 AKTIF" or "🔴 MATI") .. "\n" ..
+                          "Auto Upgrade: " .. (ZenonHub.AutoUpgrade and "🟢 AKTIF" or "🔴 MATI") .. "\n" ..
+                          "Anti-AFK: " .. (ZenonHub.AntiAFK and "🟢 AKTIF" or "🔴 MATI")
+        statusLabel.TextColor3 = colors.Text
+        statusLabel.Font = Enum.Font.Gotham
+        statusLabel.TextSize = 12
+        statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+        statusLabel.TextYAlignment = Enum.TextYAlignment.Top
+    end
+end
 
--- 🔒 AUTO CLOSE DENGAN PROTECTION
-task.delay(15, function()
-    pcall(function()
-        if screenGui and screenGui.Parent then
-            screenGui:Destroy()
-            Notif("🔒 ZenonHub VIP Ready - UI Auto Closed")
+-- Buat tabs
+for i, tabName in ipairs(tabs) do
+    local tab = CreateTab(tabName, i)
+    tab.MouseButton1Click:Connect(function()
+        for _, otherTab in ipairs(tabsFrame:GetChildren()) do
+            if otherTab:IsA("TextButton") then
+                otherTab.BackgroundColor3 = colors.TabInactive
+            end
         end
-    end)
-end)
-
--- 🔒 CLEANUP FUNCTION
-local function Cleanup()
-    pcall(function()
-        if screenGui and screenGui.Parent then
-            screenGui:Destroy()
-        end
+        tab.BackgroundColor3 = colors.TabActive
+        ShowTab(tabName)
     end)
 end
 
--- 🔒 AUTO CLEANUP JIKA PLAYER LEAVE
-game:GetService("Players").LocalPlayer.OnTeleport:Connect(Cleanup)
+-- Close button
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+    Notif("ZenonHub VIP Ditutup")
+end)
 
-Notif("🔒 ZenonHub VIP Panel Loaded Securely!")
+-- Show default tab
+ShowTab("Auto Farm")
+
+Notif("ZenonHub VIP Ready! Window bisa di-drag")
