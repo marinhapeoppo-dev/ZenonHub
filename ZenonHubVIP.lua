@@ -1,53 +1,37 @@
 local function Notif(text)
     pcall(function()
         game.StarterGui:SetCore("SendNotification", {
-            Title = "ZenonHub VIP",
+            Title = "MartinSC",
             Text = text,
             Icon = "rbxassetid://123767073052336",
-            Duration = 5
+            Duration = 3
         })
     end)
 end
 
 -- Cek game
 if game.PlaceId ~= 121864768012064 then
-    Notif("Game Tidak Didukung - Hanya Fish It")
+    Notif("Hanya untuk Fish It!")
     return
 end
 
-Notif("ZenonHub VIP Loaded!")
+Notif("MartinSC Loaded!")
 
--- Buat UI yang proper
+-- Config
+local MartinSC = {
+    NoAnimations = false,
+    FPSBoost = false
+}
+
+-- UI Elegan Hitam
 local screenGui = Instance.new("ScreenGui", game.CoreGui)
-screenGui.Name = "ZenonHubVIP_Main"
+screenGui.Name = "MartinSC_Main"
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Variabel global untuk kontrol fitur
-local ZenonHub = {
-    AutoFarm = false,
-    AutoSell = false,
-    AutoUpgrade = false,
-    AntiAFK = false,
-    SelectedRod = "Basic Rod",
-    FarmSpeed = 1
-}
-
--- Warna theme
-local colors = {
-    Background = Color3.fromRGB(20, 25, 35),
-    Header = Color3.fromRGB(0, 170, 255),
-    TabActive = Color3.fromRGB(0, 140, 255),
-    TabInactive = Color3.fromRGB(40, 50, 70),
-    Button = Color3.fromRGB(0, 150, 255),
-    ButtonText = Color3.fromRGB(255, 255, 255),
-    Text = Color3.fromRGB(240, 240, 255)
-}
-
--- Main Window (bisa di-drag)
 local mainFrame = Instance.new("Frame", screenGui)
-mainFrame.Size = UDim2.new(0, 450, 0, 500)
-mainFrame.Position = UDim2.new(0.3, 0, 0.2, 0)
-mainFrame.BackgroundColor3 = colors.Background
+mainFrame.Size = UDim2.new(0, 280, 0, 200)
+mainFrame.Position = UDim2.new(0, 10, 0, 10)
+mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 mainFrame.Active = true
 mainFrame.Draggable = true
 
@@ -55,302 +39,213 @@ local corner = Instance.new("UICorner", mainFrame)
 corner.CornerRadius = UDim.new(0, 8)
 
 local stroke = Instance.new("UIStroke", mainFrame)
-stroke.Color = colors.Header
+stroke.Color = Color3.fromRGB(60, 60, 70)
 stroke.Thickness = 2
 
 -- Header
 local header = Instance.new("Frame", mainFrame)
-header.Size = UDim2.new(1, 0, 0, 40)
-header.BackgroundColor3 = colors.Header
+header.Size = UDim2.new(1, 0, 0, 35)
+header.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 
 local headerCorner = Instance.new("UICorner", header)
 headerCorner.CornerRadius = UDim.new(0, 8)
 
 local title = Instance.new("TextLabel", header)
-title.Size = UDim2.new(1, -40, 1, 0)
+title.Size = UDim2.new(0.6, 0, 1, 0)
 title.Position = UDim2.new(0, 10, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "🎣 ZENONHUB VIP - FISH IT"
-title.TextColor3 = colors.ButtonText
+title.Text = "MartinSC"
+title.TextColor3 = Color3.fromRGB(220, 220, 220)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 16
 title.TextXAlignment = Enum.TextXAlignment.Left
 
+local minimizeBtn = Instance.new("TextButton", header)
+minimizeBtn.Size = UDim2.new(0, 25, 0, 25)
+minimizeBtn.Position = UDim2.new(1, -60, 0, 5)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+minimizeBtn.Text = "_"
+minimizeBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.TextSize = 16
+
 local closeBtn = Instance.new("TextButton", header)
-closeBtn.Size = UDim2.new(0, 30, 0, 30)
-closeBtn.Position = UDim2.new(1, -35, 0, 5)
-closeBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-closeBtn.Text = "X"
-closeBtn.TextColor3 = colors.ButtonText
+closeBtn.Size = UDim2.new(0, 25, 0, 25)
+closeBtn.Position = UDim2.new(1, -30, 0, 5)
+closeBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+closeBtn.Text = "×"
+closeBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
 closeBtn.Font = Enum.Font.GothamBold
-closeBtn.TextSize = 14
+closeBtn.TextSize = 16
 
-local closeCorner = Instance.new("UICorner", closeBtn)
-closeCorner.CornerRadius = UDim.new(0, 4)
-
--- Tab System
-local tabsFrame = Instance.new("Frame", mainFrame)
-tabsFrame.Size = UDim2.new(1, 0, 0, 40)
-tabsFrame.Position = UDim2.new(0, 0, 0, 45)
-tabsFrame.BackgroundTransparency = 1
-
-local tabs = {"Auto Farm", "Auto Sell", "Upgrade", "Settings"}
-local currentTab = "Auto Farm"
-
-local function CreateTab(name, index)
-    local tab = Instance.new("TextButton", tabsFrame)
-    tab.Size = UDim2.new(0.25, -5, 1, 0)
-    tab.Position = UDim2.new((index-1) * 0.25, 0, 0, 0)
-    tab.BackgroundColor3 = name == currentTab and colors.TabActive or colors.TabInactive
-    tab.Text = name
-    tab.TextColor3 = colors.Text
-    tab.Font = Enum.Font.Gotham
-    tab.TextSize = 12
-    
-    local tabCorner = Instance.new("UICorner", tab)
-    tabCorner.CornerRadius = UDim.new(0, 6)
-    
-    return tab
-end
+local btnCorner = Instance.new("UICorner", minimizeBtn)
+btnCorner.CornerRadius = UDim.new(0, 4)
+local btnCorner2 = Instance.new("UICorner", closeBtn)
+btnCorner2.CornerRadius = UDim.new(0, 4)
 
 -- Content Area
 local contentFrame = Instance.new("Frame", mainFrame)
-contentFrame.Size = UDim2.new(1, -20, 0, 410)
-contentFrame.Position = UDim2.new(0, 10, 0, 90)
+contentFrame.Size = UDim2.new(1, -20, 1, -45)
+contentFrame.Position = UDim2.new(0, 10, 0, 40)
 contentFrame.BackgroundTransparency = 1
 
--- Function untuk switch tab
-local function ShowTab(tabName)
-    currentTab = tabName
-    -- Clear content
-    for _, child in ipairs(contentFrame:GetChildren()) do
-        child:Destroy()
-    end
+-- No Animations Toggle
+local animToggle = Instance.new("TextButton", contentFrame)
+animToggle.Size = UDim2.new(1, 0, 0, 40)
+animToggle.Position = UDim2.new(0, 0, 0, 10)
+animToggle.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+animToggle.Text = "❌ NO ANIMATIONS: OFF"
+animToggle.TextColor3 = Color3.fromRGB(180, 180, 180)
+animToggle.Font = Enum.Font.Gotham
+animToggle.TextSize = 13
+
+local animCorner = Instance.new("UICorner", animToggle)
+animCorner.CornerRadius = UDim.new(0, 6)
+
+local animStroke = Instance.new("UIStroke", animToggle)
+animStroke.Color = Color3.fromRGB(60, 60, 70)
+animStroke.Thickness = 1
+
+-- FPS Boost Toggle
+local fpsToggle = Instance.new("TextButton", contentFrame)
+fpsToggle.Size = UDim2.new(1, 0, 0, 40)
+fpsToggle.Position = UDim2.new(0, 0, 0, 60)
+fpsToggle.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+fpsToggle.Text = "❌ FPS BOOSTER: OFF"
+fpsToggle.TextColor3 = Color3.fromRGB(180, 180, 180)
+fpsToggle.Font = Enum.Font.Gotham
+fpsToggle.TextSize = 13
+
+local fpsCorner = Instance.new("UICorner", fpsToggle)
+fpsCorner.CornerRadius = UDim.new(0, 6)
+
+local fpsStroke = Instance.new("UIStroke", fpsToggle)
+fpsStroke.Color = Color3.fromRGB(60, 60, 70)
+fpsStroke.Thickness = 1
+
+-- Status
+local statusLabel = Instance.new("TextLabel", contentFrame)
+statusLabel.Size = UDim2.new(1, 0, 0, 20)
+statusLabel.Position = UDim2.new(0, 0, 0, 110)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Status: Ready"
+statusLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+statusLabel.Font = Enum.Font.Gotham
+statusLabel.TextSize = 11
+statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- No Animations Function
+local function ToggleAnimations()
+    MartinSC.NoAnimations = not MartinSC.NoAnimations
     
-    if tabName == "Auto Farm" then
-        -- AUTO FARM TAB
-        local farmToggle = Instance.new("TextButton", contentFrame)
-        farmToggle.Size = UDim2.new(1, 0, 0, 40)
-        farmToggle.Position = UDim2.new(0, 0, 0, 10)
-        farmToggle.BackgroundColor3 = ZenonHub.AutoFarm and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-        farmToggle.Text = ZenonHub.AutoFarm and "🟢 AUTO FARM AKTIF" or "🔴 AUTO FARM MATI"
-        farmToggle.TextColor3 = colors.ButtonText
-        farmToggle.Font = Enum.Font.GothamBold
-        farmToggle.TextSize = 14
-        
-        local toggleCorner = Instance.new("UICorner", farmToggle)
-        toggleCorner.CornerRadius = UDim.new(0, 6)
-        
-        farmToggle.MouseButton1Click:Connect(function()
-            ZenonHub.AutoFarm = not ZenonHub.AutoFarm
-            farmToggle.BackgroundColor3 = ZenonHub.AutoFarm and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-            farmToggle.Text = ZenonHub.AutoFarm and "🟢 AUTO FARM AKTIF" or "🔴 AUTO FARM MATI"
-            Notif(ZenonHub.AutoFarm and "Auto Farm Diaktifkan!" or "Auto Farm Dimatikan!")
-            
-            if ZenonHub.AutoFarm then
-                -- Start auto farm
-                coroutine.wrap(function()
-                    while ZenonHub.AutoFarm and task.wait(ZenonHub.FarmSpeed) do
-                        pcall(function()
-                            -- Simulasi auto farm (ganti dengan code asli)
-                            print("🎣 Memancing ikan...")
-                        end)
+    if MartinSC.NoAnimations then
+        -- Disable animations
+        for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+            if player.Character then
+                for _, part in ipairs(player.Character:GetDescendants()) do
+                    if part:IsA("AnimationController") or part:IsA("Animator") then
+                        part:Destroy()
                     end
-                end)()
-            end
-        end)
-        
-        -- Speed Control
-        local speedLabel = Instance.new("TextLabel", contentFrame)
-        speedLabel.Size = UDim2.new(1, 0, 0, 25)
-        speedLabel.Position = UDim2.new(0, 0, 0, 60)
-        speedLabel.BackgroundTransparency = 1
-        speedLabel.Text = "Kecepatan Farm: " .. ZenonHub.FarmSpeed .. "s"
-        speedLabel.TextColor3 = colors.Text
-        speedLabel.Font = Enum.Font.Gotham
-        speedLabel.TextSize = 12
-        speedLabel.TextXAlignment = Enum.TextXAlignment.Left
-        
-        local speedSlider = Instance.new("TextButton", contentFrame)
-        speedSlider.Size = UDim2.new(1, 0, 0, 30)
-        speedSlider.Position = UDim2.new(0, 0, 0, 90)
-        speedSlider.BackgroundColor3 = colors.TabInactive
-        speedSlider.Text = "Atur Kecepatan (1-10 detik)"
-        speedSlider.TextColor3 = colors.Text
-        speedSlider.Font = Enum.Font.Gotham
-        speedSlider.TextSize = 12
-        
-        local sliderCorner = Instance.new("UICorner", speedSlider)
-        sliderCorner.CornerRadius = UDim.new(0, 6)
-        
-        speedSlider.MouseButton1Click:Connect(function()
-            ZenonHub.FarmSpeed = ZenonHub.FarmSpeed % 10 + 1
-            speedLabel.Text = "Kecepatan Farm: " .. ZenonHub.FarmSpeed .. "s"
-            Notif("Kecepatan: " .. ZenonHub.FarmSpeed .. " detik")
-        end)
-        
-    elseif tabName == "Auto Sell" then
-        -- AUTO SELL TAB
-        local sellToggle = Instance.new("TextButton", contentFrame)
-        sellToggle.Size = UDim2.new(1, 0, 0, 40)
-        sellToggle.Position = UDim2.new(0, 0, 0, 10)
-        sellToggle.BackgroundColor3 = ZenonHub.AutoSell and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-        sellToggle.Text = ZenonHub.AutoSell and "🟢 AUTO SELL AKTIF" or "🔴 AUTO SELL MATI"
-        sellToggle.TextColor3 = colors.ButtonText
-        sellToggle.Font = Enum.Font.GothamBold
-        sellToggle.TextSize = 14
-        
-        local toggleCorner = Instance.new("UICorner", sellToggle)
-        toggleCorner.CornerRadius = UDim.new(0, 6)
-        
-        sellToggle.MouseButton1Click:Connect(function()
-            ZenonHub.AutoSell = not ZenonHub.AutoSell
-            sellToggle.BackgroundColor3 = ZenonHub.AutoSell and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-            sellToggle.Text = ZenonHub.AutoSell and "🟢 AUTO SELL AKTIF" or "🔴 AUTO SELL MATI"
-            Notif(ZenonHub.AutoSell and "Auto Sell Diaktifkan!" or "Auto Sell Dimatikan!")
-        end)
-        
-        -- Info Auto Sell
-        local infoLabel = Instance.new("TextLabel", contentFrame)
-        infoLabel.Size = UDim2.new(1, 0, 0, 100)
-        infoLabel.Position = UDim2.new(0, 0, 0, 60)
-        infoLabel.BackgroundTransparency = 1
-        infoLabel.Text = "Fitur Auto Sell akan otomatis menjual ikan yang didapat setiap 30 detik"
-        infoLabel.TextColor3 = colors.Text
-        infoLabel.Font = Enum.Font.Gotham
-        infoLabel.TextSize = 12
-        infoLabel.TextWrapped = true
-        infoLabel.TextYAlignment = Enum.TextYAlignment.Top
-        
-    elseif tabName == "Upgrade" then
-        -- UPGRADE TAB
-        local upgradeToggle = Instance.new("TextButton", contentFrame)
-        upgradeToggle.Size = UDim2.new(1, 0, 0, 40)
-        upgradeToggle.Position = UDim2.new(0, 0, 0, 10)
-        upgradeToggle.BackgroundColor3 = ZenonHub.AutoUpgrade and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-        upgradeToggle.Text = ZenonHub.AutoUpgrade and "🟢 AUTO UPGRADE AKTIF" or "🔴 AUTO UPGRADE MATI"
-        upgradeToggle.TextColor3 = colors.ButtonText
-        upgradeToggle.Font = Enum.Font.GothamBold
-        upgradeToggle.TextSize = 14
-        
-        local toggleCorner = Instance.new("UICorner", upgradeToggle)
-        toggleCorner.CornerRadius = UDim.new(0, 6)
-        
-        upgradeToggle.MouseButton1Click:Connect(function()
-            ZenonHub.AutoUpgrade = not ZenonHub.AutoUpgrade
-            upgradeToggle.BackgroundColor3 = ZenonHub.AutoUpgrade and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-            upgradeToggle.Text = ZenonHub.AutoUpgrade and "🟢 AUTO UPGRADE AKTIF" or "🔴 AUTO UPGRADE MATI"
-            Notif(ZenonHub.AutoUpgrade and "Auto Upgrade Diaktifkan!" or "Auto Upgrade Dimatikan!")
-        end)
-        
-        -- Rod Selection
-        local rods = {"Basic Rod", "Advanced Rod", "Pro Rod", "VIP Rod"}
-        local rodLabel = Instance.new("TextLabel", contentFrame)
-        rodLabel.Size = UDim2.new(1, 0, 0, 25)
-        rodLabel.Position = UDim2.new(0, 0, 0, 60)
-        rodLabel.BackgroundTransparency = 1
-        rodLabel.Text = "Pilih Rod: " .. ZenonHub.SelectedRod
-        rodLabel.TextColor3 = colors.Text
-        rodLabel.Font = Enum.Font.Gotham
-        rodLabel.TextSize = 12
-        rodLabel.TextXAlignment = Enum.TextXAlignment.Left
-        
-        local rodButton = Instance.new("TextButton", contentFrame)
-        rodButton.Size = UDim2.new(1, 0, 0, 30)
-        rodButton.Position = UDim2.new(0, 0, 0, 90)
-        rodButton.BackgroundColor3 = colors.Button
-        rodButton.Text = "Ganti Rod"
-        rodButton.TextColor3 = colors.ButtonText
-        rodButton.Font = Enum.Font.Gotham
-        rodButton.TextSize = 12
-        
-        local rodCorner = Instance.new("UICorner", rodButton)
-        rodCorner.CornerRadius = UDim.new(0, 6)
-        
-        rodButton.MouseButton1Click:Connect(function()
-            local currentIndex = 1
-            for i, rod in ipairs(rods) do
-                if rod == ZenonHub.SelectedRod then
-                    currentIndex = i
-                    break
                 end
             end
-            ZenonHub.SelectedRod = rods[(currentIndex % #rods) + 1]
-            rodLabel.Text = "Pilih Rod: " .. ZenonHub.SelectedRod
-            Notif("Rod dipilih: " .. ZenonHub.SelectedRod)
+        end
+        
+        -- Disable future animations
+        game:GetService("Players").PlayerAdded:Connect(function(player)
+            player.CharacterAdded:Connect(function(character)
+                if MartinSC.NoAnimations then
+                    for _, part in ipairs(character:GetDescendants()) do
+                        if part:IsA("AnimationController") or part:IsA("Animator") then
+                            part:Destroy()
+                        end
+                    end
+                end
+            end)
         end)
         
-    elseif tabName == "Settings" then
-        -- SETTINGS TAB
-        local afkToggle = Instance.new("TextButton", contentFrame)
-        afkToggle.Size = UDim2.new(1, 0, 0, 40)
-        afkToggle.Position = UDim2.new(0, 0, 0, 10)
-        afkToggle.BackgroundColor3 = ZenonHub.AntiAFK and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-        afkToggle.Text = ZenonHub.AntiAFK and "🟢 ANTI-AFK AKTIF" or "🔴 ANTI-AFK MATI"
-        afkToggle.TextColor3 = colors.ButtonText
-        afkToggle.Font = Enum.Font.GothamBold
-        afkToggle.TextSize = 14
-        
-        local toggleCorner = Instance.new("UICorner", afkToggle)
-        toggleCorner.CornerRadius = UDim.new(0, 6)
-        
-        afkToggle.MouseButton1Click:Connect(function()
-            ZenonHub.AntiAFK = not ZenonHub.AntiAFK
-            afkToggle.BackgroundColor3 = ZenonHub.AntiAFK and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
-            afkToggle.Text = ZenonHub.AntiAFK and "🟢 ANTI-AFK AKTIF" or "🔴 ANTI-AFK MATI"
-            
-            if ZenonHub.AntiAFK then
-                -- Aktifkan Anti-AFK
-                local VirtualUser = game:GetService("VirtualUser")
-                game:GetService("Players").LocalPlayer.Idled:Connect(function()
-                    VirtualUser:CaptureController()
-                    VirtualUser:ClickButton2(Vector2.new())
-                end)
-                Notif("Anti-AFK Diaktifkan!")
-            else
-                Notif("Anti-AFK Dimatikan!")
-            end
-        end)
-        
-        -- Status Info
-        local statusLabel = Instance.new("TextLabel", contentFrame)
-        statusLabel.Size = UDim2.new(1, 0, 0, 120)
-        statusLabel.Position = UDim2.new(0, 0, 0, 60)
-        statusLabel.BackgroundTransparency = 1
-        statusLabel.Text = "STATUS FITUR:\n\n" ..
-                          "Auto Farm: " .. (ZenonHub.AutoFarm and "🟢 AKTIF" or "🔴 MATI") .. "\n" ..
-                          "Auto Sell: " .. (ZenonHub.AutoSell and "🟢 AKTIF" or "🔴 MATI") .. "\n" ..
-                          "Auto Upgrade: " .. (ZenonHub.AutoUpgrade and "🟢 AKTIF" or "🔴 MATI") .. "\n" ..
-                          "Anti-AFK: " .. (ZenonHub.AntiAFK and "🟢 AKTIF" or "🔴 MATI")
-        statusLabel.TextColor3 = colors.Text
-        statusLabel.Font = Enum.Font.Gotham
-        statusLabel.TextSize = 12
-        statusLabel.TextXAlignment = Enum.TextXAlignment.Left
-        statusLabel.TextYAlignment = Enum.TextYAlignment.Top
+        animToggle.Text = "✅ NO ANIMATIONS: ON"
+        animToggle.BackgroundColor3 = Color3.fromRGB(40, 80, 40)
+        statusLabel.Text = "Animations Disabled"
+        Notif("No Animations: ON")
+    else
+        animToggle.Text = "❌ NO ANIMATIONS: OFF"
+        animToggle.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+        statusLabel.Text = "Animations Enabled"
+        Notif("No Animations: OFF")
     end
 end
 
--- Buat tabs
-for i, tabName in ipairs(tabs) do
-    local tab = CreateTab(tabName, i)
-    tab.MouseButton1Click:Connect(function()
-        for _, otherTab in ipairs(tabsFrame:GetChildren()) do
-            if otherTab:IsA("TextButton") then
-                otherTab.BackgroundColor3 = colors.TabInactive
+-- FPS Boost Function
+local function ToggleFPSBoost()
+    MartinSC.FPSBoost = not MartinSC.FPSBoost
+    
+    if MartinSC.FPSBoost then
+        -- Graphics settings
+        settings().Rendering.QualityLevel = 1
+        
+        -- Disable unnecessary effects
+        for _, effect in ipairs(workspace:GetDescendants()) do
+            if effect:IsA("ParticleEmitter") or effect:IsA("Trail") or effect:IsA("Beam") then
+                effect.Enabled = false
             end
         end
-        tab.BackgroundColor3 = colors.TabActive
-        ShowTab(tabName)
-    end)
+        
+        -- Reduce terrain detail
+        if workspace:FindFirstChildOfClass("Terrain") then
+            workspace.Terrain.Decoration = false
+        end
+        
+        fpsToggle.Text = "✅ FPS BOOSTER: ON"
+        fpsToggle.BackgroundColor3 = Color3.fromRGB(40, 80, 40)
+        statusLabel.Text = "FPS Boost: ON"
+        Notif("FPS Booster: ON")
+    else
+        -- Restore settings
+        settings().Rendering.QualityLevel = 10
+        
+        -- Enable effects
+        for _, effect in ipairs(workspace:GetDescendants()) do
+            if effect:IsA("ParticleEmitter") or effect:IsA("Trail") or effect:IsA("Beam") then
+                effect.Enabled = true
+            end
+        end
+        
+        -- Restore terrain
+        if workspace:FindFirstChildOfClass("Terrain") then
+            workspace.Terrain.Decoration = true
+        end
+        
+        fpsToggle.Text = "❌ FPS BOOSTER: OFF"
+        fpsToggle.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+        statusLabel.Text = "FPS Boost: OFF"
+        Notif("FPS Booster: OFF")
+    end
 end
 
--- Close button
-closeBtn.MouseButton1Click:Connect(function()
-    screenGui:Destroy()
-    Notif("ZenonHub VIP Ditutup")
+-- Button Events
+animToggle.MouseButton1Click:Connect(ToggleAnimations)
+fpsToggle.MouseButton1Click:Connect(ToggleFPSBoost)
+
+-- Minimize Function
+local minimized = false
+minimizeBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    
+    if minimized then
+        mainFrame.Size = UDim2.new(0, 280, 0, 35)
+        contentFrame.Visible = false
+        minimizeBtn.Text = "+"
+    else
+        mainFrame.Size = UDim2.new(0, 280, 0, 200)
+        contentFrame.Visible = true
+        minimizeBtn.Text = "_"
+    end
 end)
 
--- Show default tab
-ShowTab("Auto Farm")
+-- Close Button
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+    Notif("MartinSC Closed")
+end)
 
-Notif("ZenonHub VIP Ready! Window bisa di-drag")
+Notif("MartinSC Ready - Drag to move")
